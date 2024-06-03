@@ -53,16 +53,22 @@ class ProcessMostViewed extends Process {
 			$out .= sprintf('<p>%s</p>', __('Page views from search engine crawlers are not included in the statistics (disabled by module configuration)'));
 		}
 
-		$viewRanges = $this->renderViewRangeEntry($mostViewed, 'viewRange1');
-		$viewRanges .= $this->renderViewRangeEntry($mostViewed,'viewRange2');
-		$viewRanges .= $this->renderViewRangeEntry($mostViewed,'viewRange3');
+		$viewRanges = '';
+		for ($i = 1; $i <= 3; $i++) {
+			$viewRanges .= $this->renderViewRangeEntry($mostViewed, 'viewRange' . $i);
+		}
 
-		$out .= $viewRanges ?: sprintf('<h2>%s</h2>', __('No Page Views found.'));
-		$out .= $viewRanges ? '' : sprintf('<p>%s</p>', __('Enable auto counting in the module config or add the counting script to a template.'));
+		if (!$viewRanges) {
+			$out .= sprintf('<h2>%s</h2>', __('No Page Views found.'));
+			$out .= sprintf('<p>%s</p>', __('Enable auto counting in the module config or add the counting script to a template.'));
+			return $out;
+		}
+
+		$out .= $viewRanges;
 		return $out;
 	}
 
-	private function handlePageViewDeletionResult($result, $timeRange): void {
+	private function handlePageViewDeletionResult(int|false $result, string $timeRange): void {
 		if ($result > 0) {
 			$this->message(sprintf(__('%s page views older than %s days found and deleted.'), $result, $timeRange));
 			return;

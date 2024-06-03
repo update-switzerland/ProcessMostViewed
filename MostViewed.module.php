@@ -7,16 +7,10 @@
  * https://update.ch
  */
 class MostViewed extends WireData implements Module, ConfigurableModule {
-	/**
-	 * Name of the database table used by this module
-	 * @var string
-	 */
+	/** @var string Name of the database table used by this module */
 	const TABLE_NAME = 'most_viewed_views';
 
-	/**
-	 * Name of the key in ProcessWire-Logs used for debugging
-	 * @var string
-	 */
+	/** @var string Name of the key in ProcessWire-Logs used for debugging */
 	const DEBUG_NAME = 'most-viewed-debug';
 
 	public static function getModuleInfo(): array {
@@ -85,7 +79,7 @@ class MostViewed extends WireData implements Module, ConfigurableModule {
 		if (isset($input->get->{$this->getVarAjaxLoad})) {
 			$lang = $this->input->lang;
 			$useLang = false;
-			if ($lang && $lang != '' && $lang != 'de' && $lang != 'default') {
+			if (!empty($lang) && $lang !== 'default') {
 				$useLang = true;
 				$user->language = $languages->get($lang);
 			}
@@ -128,7 +122,7 @@ class MostViewed extends WireData implements Module, ConfigurableModule {
 					foreach (preg_split('/\s*,\s*/', $this->titleFields) as $f) {
 						$title .= $most->get($f) . ' ';
 					}
-					$mostViewedList .= str_replace(['{url}', '{title}'], [$url, $title], $this->ajaxLoadListCode);
+					$mostViewedList .= sprintf($this->ajaxLoadListCode, $url, $title);
 				}
 				echo $mostViewedList;
 			}

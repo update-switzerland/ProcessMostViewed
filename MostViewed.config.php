@@ -18,7 +18,7 @@ class MostViewedConfig extends ModuleConfig {
 			'excludedIPs' => '',
 			'titleFields' => 'title',
 			'getVarAjaxLoad' => 'getMostViewedContent',
-			'ajaxLoadListCode' => '<li><a href="{url}">{title}</a></li>'
+			'ajaxLoadListCode' => '<li><a href="%s">{%s}</a></li>'
 		];
 	}
 
