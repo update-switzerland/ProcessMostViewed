@@ -1,11 +1,11 @@
-# MostViewed
+# MostViewed ProcessWire Module
 ## Track Page Views and List «Most Viewed» Pages
-The MostViewed module for ProcessWire enables you to track page views and returns a list of the most viewed pages within a defined time range.<br>
-This module is well-suited for a widget, such as a "Top 5 Articles of the Week" display.
+The MostViewed module for ProcessWire enables you to track page views and return a list of the most viewed pages within a given time range.<br>
+This module is ideal for creating sidebar-widgets, for example, a "Most Read Articles of the Week" display.
 
-## Installation
-1. Download the `MostViewed` module from the [ProcessWire Modules directory](https://processwire.com/modules/).
-2. Install the module in your Processwire project.
+## Getting Started
+1. Download the module from the [latest releases](https://github.com/update-switzerland/MostViewed/releases/latest).
+2. Install the module in your ProcessWire project.
 3. Go to the module configuration and enable "Automated Page View Counting".
 
 <br>
@@ -50,9 +50,9 @@ This function can also take an array of options as a parameter to fine-tune the 
 
 ```php
 $options = [
-    'templates' => 'basic-page,news-entry', // Restrict search to specific templates (comma separated)
-    'limit' => 5, // Limit the number of pages returned
-    'viewRange' => 1440 // Set a custom view-range in minutes
+  'templates' => 'basic-page,news-entry', // Restrict search to specific templates (comma separated)
+  'limit' => 5, // Limit the number of pages returned
+  'viewRange' => 1440 // Set a custom view-range in minutes
 ];
 $mostViewed = $modules->MostViewed->getMostViewedPages($options);
 ```
@@ -61,7 +61,7 @@ Once you have retrieved the most viewed pages, you can output them with a foreac
 ```php
 echo "<ol>";
 foreach ($mostViewed as $key => $most) {
-    echo "<li><a href='{$most->url}'>{$most->title}</a></li>";
+  echo "<li><a href='{$most->url}'>{$most->title}</a></li>";
 }
 echo "</ol>";
 ```
@@ -74,24 +74,24 @@ Here is a jQuery example of AJAX integration for this module, showing how to lim
 
 ```HTML
 <div id="most-viewed-container">
-	<h3>Most viewed (Ajax load)</h3>
-	<ol class="most-viewed-list">Loading...<ol>
+  <h3>Most viewed (Ajax load)</h3>
+  <ol class="most-viewed-list">Loading...<ol>
 </div>
 <script>
 // load most viewed pages into page
 $(document).ready(function() {
-    const url = `<?php echo $modules->MostViewed->getVarAjaxLoad; ?>&lang=<?php echo $user->lang->name; ?>&templates=basic-page,news-page&limit=4&viewRange=1440`;
-	$.ajax(
-        `/?${url}`,
-		{
-			success: function(data) {
-				$('#most-viewed-container .most-viewed-list').html(data);
-			},
-			error: function() {
-				$('#most-viewed-container .most-viewed-list').html('Sorry, currently no data available');
-			}
-		}
-	);
+  const url = `<?php echo $modules->MostViewed->getVarAjaxLoad; ?>&lang=<?php echo $user->lang->name; ?>&templates=basic-page,news-page&limit=4&viewRange=1440`;
+  $.ajax(
+    `/?${url}`,
+    {
+      success: function(data) {
+        $('#most-viewed-container .most-viewed-list').html(data);
+      },
+      error: function() {
+        $('#most-viewed-container .most-viewed-list').html('Sorry, currently no data available');
+      }
+    }
+  );
 });
 </script>
 ```
