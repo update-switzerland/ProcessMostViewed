@@ -189,7 +189,7 @@ class MostViewedConfig extends ModuleConfig {
 		$value .= __('Activate the «Automated page view counting» checkbox in the module configuration (recommended).') . ' ';
 		$value .= __('Or use this PHP code in the page templates you wish to count:');
 		$value .= '</p>';
-		$value .= '<pre>$modules->MostViewed->writePageView($page);</pre>';
+		$value .= '<pre>$modules->get(\'MostViewed\')->writePageView($page);</pre>';
 		$value .= '<p>';
 		$value .= __('where $page is a ProcessWire Page Object. Make sure that the page is not counted twice during a page call! And be aware of problems in cached pages or templates.');
 		$value .= '</p>';
@@ -197,7 +197,7 @@ class MostViewedConfig extends ModuleConfig {
 		$value .= '<b>' . __('Output «Most Viewed» list') . ':</b><br />';
 		$value .= __('You get an array with the recent «Most Viewed» pages with the code:');
 		$value .= '</p>';
-		$value .= '<pre>$mostViewed = $modules->MostViewed->getMostViewedPages();</pre>';
+		$value .= '<pre>$mostViewed = $modules->get(\'MostViewed\')->getMostViewedPages();</pre>';
 		$value .= '<p>';
 		$value .= __('You can also pass an array of options to the function getMostViewedPages() to control the search for the most visited pages.') . '<br />';
 		$value .= '</p>';
@@ -205,7 +205,7 @@ class MostViewedConfig extends ModuleConfig {
 	"templates" => "basic-page,news-entry,document-page",	// restrict search to specific templates (comma separated)
 	"limit" => 5,	// overwrite default number (as int) of list items defined above
 ];
-$mostViewed = $modules->MostViewed->getMostViewedPages($options);</pre>';
+$mostViewed = $modules->get(\'MostViewed\')->getMostViewedPages($options);</pre>';
 		$value .= '<p>';
 		$value .= __('Feel free to output the found pages in $mostViewed with a foreach() loop like this:') . ' ';
 		$value .= '</p>
@@ -233,7 +233,7 @@ if ($mostViewed) {
 // load most viewed pages into page
 $(document).ready(function() {
 	$.ajax(
-		\'/&lt;?php echo $modules->MostViewed->getVarAjaxLoad; ?&gt;?lang=&lt;?php echo $user->language->name; ?&gt;&templates=basic-page,news-page&limit=4\',
+		"/?&lt;?php echo $modules->get(\'MostViewed\')->getVarAjaxLoad; ?&gt;&lang=&lt;?php echo $user->lang->name; ?&gt;&templates=basic-page,news-page&limit=4",
 		{
 			success: function(data) {
 				$(\'#most-viewed-container .most-viewed-list\').html(data);

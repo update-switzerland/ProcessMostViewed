@@ -1,0 +1,11 @@
+{
+  "name": "update-switzerland/mostviewed",
+  "type": "processwire-module",
+  "license": "MIT",
+  "extra": {
+    "installer-name": "MostViewed"
+  },
+  "require": {
+    "composer/installers": "~1.0"
+  }
+}
