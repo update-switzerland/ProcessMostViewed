@@ -72,62 +72,16 @@ class MostViewed extends WireData implements Module, ConfigurableModule {
 		$this->addHookAfter('Pages::deleted', $this, 'mostViewedHookPageDeleted');
 		$this->addHookAfter('Pages::trashed', $this, 'mostViewedHookPageDeleted');
 
-		$input = $this->wire->input;
-		$user = $this->wire->user;
-		$languages = $this->wire->languages;
+        if($this->wire('config')->ajax) {
+            $this->wire->addHook('/'.$this->getVarAjaxLoad, function($e) {
+                $list = $this->renderMostViewedPages();
+                if(!empty($list)) {
+                    return $list;
+                }
+                // If nothing is returned, it returns a 404 Response
+            });
+        }
 
-		if (isset($input->get->{$this->getVarAjaxLoad})) {
-			$lang = $this->input->lang;
-			$useLang = false;
-			if (!empty($lang) && $lang !== 'default') {
-				$useLang = true;
-				$user->language = $languages->get($lang);
-			}
-
-			$options = [];
-			if (isset($input->get->templates)) {
-				$options['templates'] = $input->get->templates;
-			}
-
-			if (isset($input->get->limit) && is_numeric($input->get->limit) && $input->get->limit > 0) {
-				$options['limit'] = $input->get->limit;
-			}
-
-			$mostViewed = $this->getMostViewedPages($options);
-			if ($mostViewed->count > 0) {
-				$mostViewedList = '';
-
-				foreach ($mostViewed as $key => $most) {
-					if ($most->is('unpublished')) continue;
-					if (!$most->viewable($user->language)) continue;
-
-					if ($useLang) {
-						$parents = $most->parents;
-						$parents->add($most);
-						$urlArray = [];
-						foreach ($parents as $p) {
-							if ($p->id === 1) continue;
-							if ($p->getLanguageValue($user->language, 'name') != '') {
-								$urlArray[] = $p->getLanguageValue($user->language, 'name');
-							} else {
-								$urlArray[] = $p->name;
-							}
-						}
-						$url = '/' . $user->language->name . '/' . implode('/', $urlArray) . '/';
-					} else {
-						$url = $most->url;
-					}
-
-					$title = '';
-					foreach (preg_split('/\s*,\s*/', $this->titleFields) as $f) {
-						$title .= $most->get($f) . ' ';
-					}
-					$mostViewedList .= sprintf($this->ajaxLoadListCode, $url, $title);
-				}
-				echo $mostViewedList;
-			}
-			die();
-		}
 	}
 
 	public function ready(): void {
@@ -310,7 +264,7 @@ class MostViewed extends WireData implements Module, ConfigurableModule {
 			return $rows;
 		}
 
-		$ids = array_column($rows, 'pageId');
+		$ids = array_column($rows, 'page_id');
 		return $this->wire->pages->getById(implode('|', $ids));
 	}
 
@@ -356,6 +310,50 @@ class MostViewed extends WireData implements Module, ConfigurableModule {
 
 		return $result ?: [];
 	}
+
+    public function renderMostViewedPages() {
+        $mostViewedList = '';
+        $input = $this->wire->input;
+        $lang = $this->input->lang;
+        $userLanguage = null;
+        $useLang = false;
+
+        if (!empty($lang) && $lang !== 'default') {
+            $useLang = true;
+            $userLanguage = $this->wire->languages->get($lang);
+        }
+
+        $options = [];
+        if (isset($input->get->templates)) {
+            $options['templates'] = $input->get->templates;
+        }
+
+        if (isset($input->get->limit) && is_numeric($input->get->limit) && $input->get->limit > 0) {
+            $options['limit'] = $input->get->limit;
+        }
+
+        $mostViewed = $this->getMostViewedPages($options);
+        if ($mostViewed->count > 0) {
+            foreach ($mostViewed as $key => $most) {
+                if ($most->is('unpublished')) continue;
+                if (!$most->viewable($userLanguage)) continue;
+
+                $url = $most->url;
+                if ($useLang) {
+                    $url = $most->localUrl($userLanguage);
+                }
+
+                $title = '';
+                foreach (preg_split('/\s*,\s*/', $this->titleFields) as $f) {
+                    $title .= $most->get($f) . ' ';
+                }
+
+                $mostViewedList .= sprintf($this->ajaxLoadListCode, $url, $title);
+            }
+        }
+
+        return $mostViewedList;
+    }
 
 	private function log(string $message = ''): void {
 		if (!$this->debug || !$message) return;
