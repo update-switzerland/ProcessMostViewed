@@ -3,10 +3,16 @@
 The MostViewed module for ProcessWire enables you to track page views and return a list of the most viewed pages within a given time range.<br>
 This module is ideal for creating sidebar-widgets, for example, a "Most Read Articles of the Week" display.
 
+<br>
+
 ## Getting Started
-1. Download the module from the [latest releases](https://github.com/update-switzerland/MostViewed/releases/latest).
-2. Install the module in your ProcessWire project.
-3. Go to the module configuration and enable "Automated Page View Counting".
+Installing the MostViewed module to your ProcessWire project is simple, choose one of the following methods:
+
+- **From GitHub:** Download the module directly from [Latest Releases on GitHub](https://github.com/update-switzerland/MostViewed/releases/latest).
+- **From the ProcessWire Module Directory:** Alternatively, you can download the module from its [ProcessWire Modules page](https://processwire.com/modules/mostviewed/).
+- **Using Composer:** If you're using Composer for your project, you can add the module by running the command `composer require update-switzerland/mostviewed` in your project root directory.
+
+With the module downloaded and installed, configure it to best suit your needs. Toggle on the "Automated Page View Counting" for hands-free tracking.
 
 <br>
 
