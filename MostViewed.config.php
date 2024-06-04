@@ -18,7 +18,7 @@ class MostViewedConfig extends ModuleConfig {
 			'excludedIPs' => '',
 			'titleFields' => 'title',
 			'getVarAjaxLoad' => 'getMostViewedContent',
-			'ajaxLoadListCode' => '<li><a href="%s">{%s}</a></li>'
+			'ajaxLoadListCode' => '<li><a href="%s">%s</a></li>'
 		];
 	}
 
@@ -44,15 +44,7 @@ class MostViewedConfig extends ModuleConfig {
 		$fieldset->add($this->buildField('InputfieldToggle', [
 			'id+name' => 'autoCounting',
 			'label' => __('Automated page view counting'),
-			'description' => __('Initiate automated page view counting by module hook (no coding in templates required and it works also for cached pages)'),
-			'columnWidth' => 50
-		]));
-
-		$fieldset->add($this->buildField('InputfieldToggle', [
-			'id+name' => 'excludeCrawler',
-			'label' => __('Ignore search engine crawlers'),
-			'description' => __('Page views from search engine crawlers do not count.'),
-			'columnWidth' => 50
+			'description' => __('Initiate automated page view counting by module hook (no coding in templates required and it works also for cached pages)')
 		]));
 
 		$fieldset->add($this->buildField('InputfieldText', [
@@ -76,29 +68,40 @@ class MostViewedConfig extends ModuleConfig {
 		$options = [];
 		/** @var Template $template */
 		foreach ($this->wire->templates as $template) {
-			if ($template->flags & Template::flagSystem || !$template->filenameExists())
+			if ($template->flags & Template::flagSystem || !$template->filenameExists()) {
 				continue;
+			}
 			$options[$template->id] = $template->label ?: $template->name;
 		}
 		$fieldset->add($this->buildField('InputfieldAsmSelect', [
 			'id+name' => 'templatesToCount',
 			'label' => __('Select templates whose pages are to be counted'),
 			'description' => __('No selection = all templates will be counted.'),
-			'options' => $options
+			'options' => $options,
+			'columnWidth' => 50
 		]));
 
 		$options = [];
 		/** @var Role $role */
 		foreach ($this->wire->roles as $role) {
-			if ($role->name === 'guest')
+			if ($role->name === 'guest') {
 				continue;
+			}
 			$options[$role->id] = $role->label ?: $role->name;
 		}
 		$fieldset->add($this->buildField('InputfieldAsmSelect', [
 			'id+name' => 'rolesToCount',
 			'label' => __('Select the user roles to be counted in addition to «guest»'),
 			'description' => __('No selection = only requests with role «guest» will be counted.'),
-			'options' => $options
+			'options' => $options,
+			'columnWidth' => 50
+		]));
+
+		$fieldset->add($this->buildField('InputfieldToggle', [
+			'id+name' => 'excludeCrawler',
+			'label' => __('Ignore search engine crawlers'),
+			'description' => __('Page views from search engine crawlers do not count.'),
+			'columnWidth' => 50
 		]));
 
 		$inputFields->add($fieldset);
@@ -126,7 +129,7 @@ class MostViewedConfig extends ModuleConfig {
 		$fieldset->add($this->buildField('InputfieldText', [
 			'id+name' => 'ajaxLoadListCode',
 			'label' => __('AJAX loading list item HTML code'),
-			'description' => __('HTML code used for list items in a AJAX load. Use {url} and {title} as replacement marks')
+			'description' => __('HTML code used for list items in a AJAX load')
 		]));
 
 		$inputFields->add($fieldset);
@@ -208,7 +211,7 @@ $mostViewed = $modules->MostViewed->getMostViewedPages($options);</pre>';
 		$value .= '</p>
 		<pre>
 if ($mostViewed) {
-	echo "&lt;ol class="most-viewed"&gt;
+	echo "&lt;ol class=\'most-viewed\'&gt;";
 	foreach ($mostViewed as $key => $most) {
 		echo "&lt;li&gt;&lt;a href=\'{$most->url}\'&gt;{$most->title}&lt;/a&gt;&lt;/li&gt;";
 	}

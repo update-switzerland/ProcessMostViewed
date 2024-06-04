@@ -149,15 +149,15 @@ class MostViewed extends WireData implements Module, ConfigurableModule {
 		if ($query->execute()) {
 			if (!$query->rowCount()) return;
 			$count = $query->rowCount();
-			$message = sprintf(__('MostViewed deleted %s entries from %s of page %s'), $count, self::TABLE_NAME);
-			$this->message($message . ' ' . $page->id);
+			$message = sprintf(__('MostViewed deleted %s entries from %s of page %s'), $count, self::TABLE_NAME, $page->id);
+			$this->message($message);
 		} else {
 			$error = sprintf(__('Error executing query to delete from %s. Trying page: %s'), self::TABLE_NAME, $page->id);
 			$this->error($error);
 		}
 	}
 
-	public function deletePageViews($timeRange): bool|int {
+	public function deletePageViews(int $timeRange): bool|int {
 		$timeRange = $timeRange * 24 * 60 * 60; // convert timeRange to seconds
 		$date = date('Y-m-d H:i:s', time() - $timeRange);
 
@@ -169,15 +169,18 @@ class MostViewed extends WireData implements Module, ConfigurableModule {
 
 
 	private function isInExcludedPages(int $pageId): bool {
-		if (trim($this->excludedPages) === '') return false;
+		if (trim($this->excludedPages) === '') {
+			return false;
+		}
 
 		$excludedPages = preg_split('/\s*,\s*/', $this->excludedPages);
 		return in_array($pageId, $excludedPages);
 	}
 
 	private function isInExcludedBranches(int $pageId): bool {
-		if (trim($this->excludedBranches) === '')
+		if (trim($this->excludedBranches) === '') {
 			return false;
+		}
 
 		$excludedBranches = preg_split('/\s*,\s*/', $this->excludedBranches);
 		$currentPage = $this->pages->get($pageId);
@@ -192,8 +195,9 @@ class MostViewed extends WireData implements Module, ConfigurableModule {
 	}
 
 	private function isInExcludedIP(string $ip): bool {
-		if (trim($this->excludedIPs) === '')
+		if (trim($this->excludedIPs) === '') {
 			return false;
+		}
 
 		$excludedIPs = preg_split('/\s*,\s*/', $this->excludedIPs);
 		return in_array($ip, $excludedIPs);
@@ -202,8 +206,9 @@ class MostViewed extends WireData implements Module, ConfigurableModule {
 	private function allowTrackViewUser(): bool {
 		$user = $this->wire->user;
 
-		if ($user->isGuest())
+		if ($user->isGuest()) {
 			return true;
+		}
 
 		foreach ($this->rolesToCount as $role) {
 			if ($user->hasRole($role)) {
@@ -234,14 +239,19 @@ class MostViewed extends WireData implements Module, ConfigurableModule {
 	}
 
 	private function isCountableTemplate(int $pageId): bool {
-		if (!count($this->templatesToCount))
+		if (!count($this->templatesToCount)) {
 			return true;
+		}
 
 		$templateIds = $this->wire->templates->find('name|id=' . implode('|', $this->templatesToCount))?->explode('id');
-		if (count($templateIds) === 0) return true;
+		if (count($templateIds) === 0) {
+			return true;
+		}
 
 		$pageTemplateId = $this->wire->pages->get('id=' . $pageId)?->template?->id;
-		if (!$pageTemplateId) return false;
+		if (!$pageTemplateId) {
+			return false;
+		}
 
 		return in_array($pageTemplateId, $templateIds);
 	}
@@ -254,12 +264,12 @@ class MostViewed extends WireData implements Module, ConfigurableModule {
 		$templateId = $page->template->id;
 
 		if ($pageId === $this->wire->config->http404PageID) return;
-		if ($this->excludeCrawler == '1' && $this->checkIfCrawler()) return;
+		if ($this->excludeCrawler && $this->checkIfCrawler()) return;
 		if (!$this->allowTrackViewUser()) return;
-		if (!$this->isCountableTemplate($pageId)) return;
 		if ($this->isInExcludedIP($_SERVER['REMOTE_ADDR'])) return;
 		if ($this->isInExcludedPages($pageId)) return;
 		if ($this->isInExcludedBranches($pageId)) return;
+		if ($this->autoCounting && !$this->isCountableTemplate($pageId)) return;
 
 		$sql = sprintf("INSERT INTO %s (page_id, template_id) VALUES(:pageId, :templateId)", self::TABLE_NAME);
 		$query = $this->database->prepare($sql);
