@@ -233,7 +233,7 @@ if ($mostViewed) {
 // load most viewed pages into page
 $(document).ready(function() {
 	$.ajax(
-		"/?&lt;?php echo $modules->get(\'MostViewed\')->getVarAjaxLoad; ?&gt;&lang=&lt;?php echo $user->lang->name; ?&gt;&templates=basic-page,news-page&limit=4",
+		"/&lt;?php echo $modules->get(\'MostViewed\')->getVarAjaxLoad; ?&gt;?lang=&lt;?php echo $user->lang->name; ?&gt;&templates=basic-page,news-page&limit=4",
 		{
 			success: function(data) {
 				$(\'#most-viewed-container .most-viewed-list\').html(data);
