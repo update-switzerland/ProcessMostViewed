@@ -1,26 +1,25 @@
 en,de,description,file,hash
-"Tracking Page Views and Listing «Most Viewed» Pages","Tracken von Seitenaufrufen und Auflistung der «meistgelesenen Seiten»",,site/modules/UpdMostViewed/UpdMostViewed.module.php,9780d6f6a66fe460f5e26e9d11047f3f
-"MostViewed deleted %s entries from %s of page %s","«Meistgelesen»-Modul hat %s Einträge aus Tabelle %s gelöscht für die Seite %s",,site/modules/UpdMostViewed/UpdMostViewed.module.php,4494c88ed4aa8c946b5b25461003b929
-"Error executing query to delete from %s. Trying page: %s","Fehler beim Löschen von «Meistgelesen»-Einträge aus der Tabelle %s für die Seite %s",,site/modules/UpdMostViewed/UpdMostViewed.module.php,2073fb304bbd435e933d5fa703f414d9
-"Tracking Page Views and Listing «Most Viewed» Pages (Backend Process)","Tracken von Seitenaufrufen und Auflistung der «meistgelesenen Seiten» (Backend-Prozess)",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,9f075d31669ef3c0f1cd35f1121e751d
-"Page views from search engine crawlers are not included in the statistics (disabled by module configuration)","Seitenaufrufe von Suchmaschinen-Crawlern werden in den Statistiken nicht berücksichtigt (deaktiviert in der Modul-Konfiguration).",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,9b2c3f44d612d639b7e58bee0ffda2b4
-"No Page Views found.","Keine Seitenaufrufe gefunden.",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,77f669b7f3cd19f7d65952f6f9c4cb8b
-"Enable auto counting in the module config or add the counting script to a template.","Aktiviere automatisches Zählen in der Modulkonfiguration oder füge das Script zum Zählen der Seitenaufrufe einem Template hinzu.",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,bcfe7b49cdbd00e693175c655d67cde4
-"%s page views older than %s days found and deleted.","%s Seitenaufrufe älter als %s Tage gefunden und gelöscht.",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,61e2dec92499975bfd650da31dd0e47c
-"No page views older than %s days found to deleted.","Keine Seitenaufrufe älter als %s Tage gefunden zum Löschen.",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,e9e093efa2f61da0e9ce94bc95cc7a5c
-"Could not delete page views.","Fehler beim Löschen der Seitenaufrufe.",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,23dc0b344bf39f962b72d6f85ba226f2
-"Page","Seite",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,193cfc9be3b995831c6af2fea6650e60
-"Date","Datum",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,44749712dbec183e983dcd78a7736c41
-"Path","Pfad",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,ac70412e939d72a9234cdebb1af5867b
-"Template","Vorlage",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,278c491bdd8a53618c149c4ac790da34
-"Views","Aufrufe",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,ed4832a84ee072b00a6740f657183598
-"Page not found: id %s","Seite nicht gefunden: id %s",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,dc8dd07b752150162b80bf107930a9ea
-"Most viewed pages of the last %s hours:","Meistgesehene Seiten in den letzten %s Stunden:",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,a4adc510fe42c274d086935569277b18
-"Select time range","Zeitbereich auswählen",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,7b432e6f790a868e4ecb38e049202b74
-"older then 7 days","älter als 7 Tage",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,4666d91fc0d0f60989fcb61dcfe38107
-"older then 14 days","älter als 14 Tage",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,f448c445a79b62931dfbf8b282fe6481
-"older then 30 days","älter als 30 Tage",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,78837ee64d66e3197aedd66e562824c6
-"older then 60 days","älter als 60 Tage",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,1bf5f86633181d6f0a1f16dab9cea390
-"older then 90 days","älter als 90 Tage",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,93b38f086bc0a9551333b5763be8f5e8
-"older then 180 days","älter als 180 Tage",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,e33fba4bcdcce696a0f1e6dfe15cd564
-"Delete page views","Seitenaufrufe löschen",,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,0bcd913b5ba20543b9f21140517d12f0
+Tracking Page Views and Listing «Most Viewed» Pages (Backend Process),Tracken von Seitenaufrufen und Auflistung der «meistgelesenen Seiten» (Backend-Prozess),,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,9f075d31669ef3c0f1cd35f1121e751d
+No Page Views found.,Keine Seitenaufrufe gefunden.,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,77f669b7f3cd19f7d65952f6f9c4cb8b
+%s page views older than %s days found and deleted.,%s Seitenaufrufe älter als %s Tage gefunden und gelöscht.,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,61e2dec92499975bfd650da31dd0e47c
+No page views older than %s days found to deleted.,Keine Seitenaufrufe älter als %s Tage gefunden zum Löschen.,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,e9e093efa2f61da0e9ce94bc95cc7a5c
+Could not delete page views.,Fehler beim Löschen der Seitenaufrufe.,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,23dc0b344bf39f962b72d6f85ba226f2
+Last %s hours,Letzte %s Stunden,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,dd729090d5d8fdef1ddb3d911bb9ba46
+Page,Seite,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,193cfc9be3b995831c6af2fea6650e60
+Date,Datum,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,44749712dbec183e983dcd78a7736c41
+Path,Pfad,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,ac70412e939d72a9234cdebb1af5867b
+Template,Vorlage,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,278c491bdd8a53618c149c4ac790da34
+Views,Aufrufe,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,ed4832a84ee072b00a6740f657183598
+Page not found: id %s,Seite nicht gefunden: id %s,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,dc8dd07b752150162b80bf107930a9ea
+Delete entries,Einträge löschen,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,ef51a49e65673bb414a35dde3dca2b8b
+Select time range,Zeitbereich auswählen,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,4666d91fc0d0f60989fcb61dcfe38107
+older than 7 days,älter als 7 Tage,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,5d62cbc27bacad123438d52e73dd19a4
+older than 14 days,älter als 14 Tage,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,c5896e3306334a1a28e4f771eff56370
+older than 30 days,älter als 30 Tage,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,544855d5781fea1786606088e878b0b2
+older than 60 days,älter als 60 Tage,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,c8073947df2eed9fd6517c036dff773f
+older than 90 days,älter als 90 Tage,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,8a91681d25e2b3c85fd5be355681a675
+older than 180 days,älter als 180 Tage,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,e1c24a9f5de5a46044e53460764e2671
+Delete page views,Seitenaufrufe löschen,,site/modules/UpdMostViewed/ProcessUpdMostViewed.module.php,7b432e6f790a868e4ecb38e049202b74
+Tracking Page Views and Listing «Most Viewed» Pages,Tracken von Seitenaufrufen und Auflistung der «meistgelesenen Seiten»,,site/modules/UpdMostViewed/UpdMostViewed.module.php,9780d6f6a66fe460f5e26e9d11047f3f
+MostViewed deleted %s entries from %s of page %s,«Meistgelesen»-Modul hat %s Einträge aus Tabelle %s gelöscht für die Seite %s,,site/modules/UpdMostViewed/UpdMostViewed.module.php,4494c88ed4aa8c946b5b25461003b929
+Error executing query to delete from %s. Trying page: %s,Fehler beim Löschen von «Meistgelesen»-Einträge aus der Tabelle %s für die Seite %s,,site/modules/UpdMostViewed/UpdMostViewed.module.php,2073fb304bbd435e933d5fa703f414d9

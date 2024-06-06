@@ -1,10 +1,7 @@
 <?php namespace ProcessWire;
 
 class ProcessUpdMostViewed extends Process {
-	/**
-	 * Name used for the Module-Permission and ProcessWire Page
-	 * @var string
-	 */
+	/** @var string Name used for the Module-Permission and ProcessWire Page*/
 	const PAGE_NAME = 'most-viewed';
 
 	public static function getModuleInfo(): array {
@@ -29,43 +26,53 @@ class ProcessUpdMostViewed extends Process {
 		];
 	}
 
+
+
 	/**
 	 * @throws WireException
 	 */
 	public function ___execute(): string {
 		$input = $this->wire->input;
+		$modules = $this->wire->modules;
 
 		/** @var UpdMostViewed $mostViewed */
-		$mostViewed = $this->wire->modules->get('UpdMostViewed');
+		$mostViewed = $modules->get('UpdMostViewed');
+		$modules->get('JqueryWireTabs');
 
-		$out = '';
+		$delete = $input->post->delete ?? null;
+		$timeRange = $input->post->timerange ?? null;
 
-		$delete = $input->get->delete ?? null;
-		$timeRange = $input->get->timerange ?? null;
 		if ($delete && $timeRange) {
-			$result = $mostViewed->deletePageViews($timeRange);
+			$result = $mostViewed->deletePageViews((int) $timeRange);
 			$this->handlePageViewDeletionResult($result, $timeRange);
 		}
 
-		$out .= $this->deleteForm();
+		/** @var UpdMostViewed $mostViewed */
+		$mostViewed = $modules->get('UpdMostViewed');
 
-		if ($mostViewed->excludeCrawler) {
-			$out .= sprintf('<p>%s</p>', __('Page views from search engine crawlers are not included in the statistics (disabled by module configuration)'));
-		}
+		/** @var InputfieldForm $form */
+		$form = $modules->get('InputfieldForm');
+		$form->attr('name+id', 'MostViewedTabs');
+		$form->attr('method', 'post');
+		$form->attr('action', './');
 
-		$viewRanges = '';
+		$tabsFound = false;
 		for ($i = 1; $i <= 3; $i++) {
-			$viewRanges .= $this->renderViewRangeEntry($mostViewed, 'viewRange' . $i);
+			$tab = $this->buildViewRangeTab($mostViewed, 'viewRange'.$i);
+			if ($tab) {
+				$tabsFound = true;
+				$form->add($tab);
+			}
 		}
 
-		if (!$viewRanges) {
-			$out .= sprintf('<h2>%s</h2>', __('No Page Views found.'));
-			$out .= sprintf('<p>%s</p>', __('Enable auto counting in the module config or add the counting script to a template.'));
-			return $out;
+		if (!$tabsFound) {
+			return sprintf('<h2>%s</h2><p>%s</p>', __('No Page Views found.'), __('Enable auto counting in the module config or add the counting script to a template.'));
 		}
 
-		$out .= $viewRanges;
-		return $out;
+		$tab = $this->buildDeleteEntriesTab();
+		$form->add($tab);
+
+		return $form->render();
 	}
 
 	private function handlePageViewDeletionResult(int|false $result, string $timeRange): void {
@@ -85,9 +92,21 @@ class ProcessUpdMostViewed extends Process {
 	/**
 	 * @throws WireException
 	 */
-	private function renderViewRangeEntry(UpdMostViewed $mostViewed, string $viewRangeKey): string {
+	private function buildViewRangeTab(UpdMostViewed $mostViewed, string $viewRangeKey): ?InputfieldWrapper {
 		$modules = $this->wire->modules;
 		$viewRange = $mostViewed->$viewRangeKey;
+
+		$mPages = $mostViewed->getMostViewedPages([
+			'viewRange' => $viewRange,
+			'templates' => ''
+		], true);
+
+		if (empty($mPages)) return null;
+
+		$tab = new InputfieldWrapper();
+		$tab->attr('id', 'MostViewedPages'.$viewRangeKey);
+		$tab->attr('title', sprintf(__('Last %s hours'), $viewRange / 60));
+		$tab->attr('class', 'WireTab');
 
 		/** @var MarkupAdminDataTable $table */
 		$table = $modules->get('MarkupAdminDataTable');
@@ -100,13 +119,6 @@ class ProcessUpdMostViewed extends Process {
 			__('Template'),
 			__('Views')
 		]);
-
-		$mPages = $mostViewed->getMostViewedPages([
-			'viewRange' => $viewRange,
-			'templates' => ''
-		], true);
-
-		if (empty($mPages)) return '';
 
 		foreach ($mPages as $key => $mP) {
 			$p = $this->wire->pages->get($mP['page_id']);
@@ -124,58 +136,54 @@ class ProcessUpdMostViewed extends Process {
 			} else {
 				$table->row([
 					sprintf('%d.', $counter),
-					sprintf(__('Page not found: id %s'), $mP['pages_id']),
+					sprintf(__('Page not found: id %s'), $mP['page_id']),
 					'', '', '', ''
 				]);
 			}
 		}
 
-		return sprintf('<h2>%s</h2>', sprintf(__('Most viewed pages of the last %s hours:'), $viewRange / 60)) . $table->render();
+		$tabContent = $this->modules->get('InputfieldMarkup');
+		$tabContent->value = $table->render();
+		$tab->add($tabContent);
+
+		return $tab;
 	}
 
 	/**
 	 * @throws WireException
 	 */
-	public function deleteForm(): string {
+	public function buildDeleteEntriesTab(): InputfieldWrapper {
 		$modules = $this->wire->modules;
 
-		/** @var InputfieldForm $form */
-		$form = $modules->get('InputfieldForm');
-		$form->attr('action', '');
-		$form->attr('method', 'get');
-
-		/** @var InputfieldFieldset $fieldset */
-		$fieldset = $modules->get('InputfieldFieldset');
-		$fieldset->label = __('Delete page views');
-		$fieldset->collapsed = Inputfield::collapsedYes;
+		$tab = new InputfieldWrapper();
+		$tab->attr('id+name', 'DeleteEntries');
+		$tab->attr('title', __('Delete entries'));
+		$tab->attr('class', 'WireTab');
 
 		/** @var InputfieldSelect $field */
 		$field = $modules->get('InputfieldSelect');
 		$field->label = __('Select time range');
-		$field->columnWidth = 100;
-		$field->attr('name', 'timerange');
+		$field->attr('id+name', 'timerange');
+		$field->attr('defaultValue', '7');
 		$timeRanges = [
-			'7' => __('older then 7 days'),
-			'14' => __('older then 14 days'),
-			'30' => __('older then 30 days'),
-			'60' => __('older then 60 days'),
-			'90' => __('older then 90 days'),
-			'180' => __('older then 180 days')
+			'7' => __('older than 7 days'),
+			'14' => __('older than 14 days'),
+			'30' => __('older than 30 days'),
+			'60' => __('older than 60 days'),
+			'90' => __('older than 90 days'),
+			'180' => __('older than 180 days')
 		];
 		foreach ($timeRanges as $k => $v) {
 			$field->addOption($k, $v);
 		}
-		$fieldset->add($field);
+		$tab->add($field);
 
 		/** @var InputfieldSubmit $field */
 		$field = $this->modules->get('InputfieldSubmit');
 		$field->value = __('Delete page views');
-		$field->attr('name', 'delete');
-		$field->columnWidth = 100;
-		$fieldset->add($field);
+		$field->attr('id+name', 'delete');
+		$tab->add($field);
 
-		$form->add($fieldset);
-
-		return $form->render();
+		return $tab;
 	}
 }
