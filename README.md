@@ -1,16 +1,15 @@
-# MostViewed ProcessWire Module
+# UpdMostViewed ProcessWire Module
 ## Track Page Views and List «Most Viewed» Pages
-The MostViewed module for ProcessWire enables you to track page views and return a list of the most viewed pages within a given time range.<br>
+The UpdMostViewed module for ProcessWire enables you to track page views and return a list of the most viewed pages within a given time range.<br>
 This module is ideal for creating sidebar-widgets, for example, a "Most Read Articles of the Week" display.
 
 <br>
 
 ## Getting Started
-Installing the MostViewed module to your ProcessWire project is simple, choose one of the following methods:
+Installing the UpdMostViewed module to your ProcessWire project is simple, choose one of the following methods:
 
 - **From GitHub:** Download the module directly from [Latest Releases on GitHub](https://github.com/update-switzerland/MostViewed/releases/latest).
-- **From the ProcessWire Module Directory:** Alternatively, you can download the module from its [ProcessWire Modules page](https://processwire.com/modules/mostviewed/).
-- **Using Composer:** If you're using Composer for your project, you can add the module by running the command `composer require update-switzerland/mostviewed` in your project root directory.
+- **Using Composer:** If you're using Composer for your project, you can add the module by running the command `composer require update-switzerland/updmostviewed` in your project root directory.
 
 With the module downloaded and installed, configure it to best suit your needs. Toggle on the "Automated Page View Counting" for hands-free tracking.
 
@@ -20,12 +19,13 @@ With the module downloaded and installed, configure it to best suit your needs. 
 ### Manual View Tracking
 While automatic tracking is recommended and easier to use, you can also manually track page views by adding the following line to your page templates
 ```php
-$modules->get('MostViewed')->writePageView($page);
+$modules->get('UpdMostViewed')->writePageView($page);
 ```
 In this case, $page should be a ProcessWire Page object.<br>
 Manual view counting will still respect any settings for exclusions (IPs, crawlers, etc.).
 
 <br>
+<hr style="background:#090;" />
 
 ### Automatic View Tracking (Recommended)
 To use automatic tracking, simply go to the MostViewed module configuration and enable "Automated Page View Counting".
@@ -49,7 +49,7 @@ Default values for the time ranges are 1 day, 2 days, and 3 days.
 ### Retrieving the «Most Viewed» Pages
 You can retrieve an array of the most viewed pages with the following code:
 ```php
-$mostViewed = $modules->get('MostViewed')->getMostViewedPages();
+$mostViewed = $modules->get('UpdMostViewed')->getMostViewedPages();
 ```
 
 This function can also take an array of options as a parameter to fine-tune the search for the most viewed pages.
@@ -60,7 +60,7 @@ $options = [
   'limit' => 5, // Limit the number of pages returned
   'viewRange' => 1440 // Set a custom view-range in minutes
 ];
-$mostViewed = $modules->get('MostViewed')->getMostViewedPages($options);
+$mostViewed = $modules->get('UpdMostViewed')->getMostViewedPages($options);
 ```
 
 Once you have retrieved the most viewed pages, you can output them with a foreach loop:
@@ -86,9 +86,9 @@ Here is a jQuery example of AJAX integration for this module, showing how to lim
 <script>
 // load most viewed pages into page
 $(document).ready(function() {
-  const url = `<?php echo $modules->get('MostViewed')->getVarAjaxLoad; ?>&lang=<?php echo $user->lang->name; ?>&templates=basic-page,news-page&limit=4&viewRange=1440`;
+  const url = `<?php echo $modules->get('UpdMostViewed')->getVarAjaxLoad; ?>?lang=<?php echo $user->lang->name; ?>&templates=basic-page,news-page&limit=4&viewRange=1440`;
   $.ajax(
-    `/?${url}`,
+    `/${url}`,
     {
       success: function(data) {
         $('#most-viewed-container .most-viewed-list').html(data);

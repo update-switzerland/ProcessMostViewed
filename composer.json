@@ -1,9 +1,9 @@
 {
-  "name": "update-switzerland/mostviewed",
+  "name": "update-switzerland/updmostviewed",
   "type": "processwire-module",
   "license": "MIT",
   "extra": {
-    "installer-name": "MostViewed"
+    "installer-name": "UpdMostViewed"
   },
   "require": {
     "composer/installers": "~1.0"
