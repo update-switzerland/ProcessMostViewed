@@ -263,7 +263,16 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 		return $this->wire->pages->getById(implode('|', $ids));
 	}
 
-	public function searchMostViewedPages(int $minutes, int $limit, string $templates = ''): array {
+    public function hasEntriesInDB(): bool {
+        $sql = sprintf("SELECT COUNT(*) AS count FROM %s", self::TABLE_NAME);
+        $query = $this->database->prepare($sql);
+        $query->execute();
+        $result = $query->fetch(\PDO::FETCH_ASSOC);
+        return $result['count'] > 0;
+    }
+
+
+    public function searchMostViewedPages(int $minutes, int $limit, string $templates = ''): array {
 		$templateCondition = '';
 
 		if (!empty($templates)) {

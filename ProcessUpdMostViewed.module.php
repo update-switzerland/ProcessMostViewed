@@ -33,10 +33,11 @@ class ProcessUpdMostViewed extends Process {
 	 * @throws WireException
 	 */
 	public function ___execute(): string {
+        $out = sprintf('<h2>%s</h2><p>%s</p>', __('No Page Views found.'), __('Enable auto counting in the module config or add the counting script to a template.'));
+
 		$input = $this->wire->input;
 		$modules = $this->wire->modules;
 
-		/** @var UpdMostViewed $mostViewed */
 		$mostViewed = $modules->get('UpdMostViewed');
 		$modules->get('JqueryWireTabs');
 
@@ -48,33 +49,38 @@ class ProcessUpdMostViewed extends Process {
 			$this->handlePageViewDeletionResult($result, $timeRange);
 		}
 
-		/** @var UpdMostViewed $mostViewed */
-		$mostViewed = $modules->get('UpdMostViewed');
+        if($mostViewed->hasEntriesInDB()) {
+            $out = $this->renderMostViewedForm($mostViewed);
+        }
 
-		/** @var InputfieldForm $form */
-		$form = $modules->get('InputfieldForm');
-		$form->attr('name+id', 'MostViewedTabs');
-		$form->attr('method', 'post');
-		$form->attr('action', './');
-
-		$tabsFound = false;
-		for ($i = 1; $i <= 3; $i++) {
-			$tab = $this->buildViewRangeTab($mostViewed, 'viewRange'.$i);
-			if ($tab) {
-				$tabsFound = true;
-				$form->add($tab);
-			}
-		}
-
-		if (!$tabsFound) {
-			return sprintf('<h2>%s</h2><p>%s</p>', __('No Page Views found.'), __('Enable auto counting in the module config or add the counting script to a template.'));
-		}
-
-		$tab = $this->buildDeleteEntriesTab();
-		$form->add($tab);
-
-		return $form->render();
+		return $out;
 	}
+
+    public function renderMostViewedForm(UpdMostViewed $mostViewed) {
+        $modules = $this->wire->modules;
+
+        $form = $modules->get('InputfieldForm');
+        $form->attr('name+id', 'MostViewedTabs');
+        $form->attr('method', 'post');
+        $form->attr('action', './');
+
+        for ($i = 1; $i <= 3; $i++) {
+            $viewRange = $mostViewed->get('viewRange'.$i);
+            $mPages = $mostViewed->getMostViewedPages([
+                'viewRange' => $viewRange,
+                'templates' => ''
+            ], true);
+
+            if (!empty($mPages)) {
+                $tab = $this->buildViewRangeTab($mPages, $viewRange, 'viewRange'.$i);
+                $form->add($tab);
+            }
+        }
+        $tab = $this->buildDeleteEntriesTab();
+        $form->add($tab);
+
+        return $form->render();
+    }
 
 	private function handlePageViewDeletionResult(int|false $result, string $timeRange): void {
 		if ($result > 0) {
@@ -93,16 +99,8 @@ class ProcessUpdMostViewed extends Process {
 	/**
 	 * @throws WireException
 	 */
-	private function buildViewRangeTab(UpdMostViewed $mostViewed, string $viewRangeKey): ?InputfieldWrapper {
+	private function buildViewRangeTab(array|PageArray $mPages, string $viewRange, string $viewRangeKey): ?InputfieldWrapper {
 		$modules = $this->wire->modules;
-		$viewRange = $mostViewed->$viewRangeKey;
-
-		$mPages = $mostViewed->getMostViewedPages([
-			'viewRange' => $viewRange,
-			'templates' => ''
-		], true);
-
-		if (empty($mPages)) return null;
 
 		$tab = new InputfieldWrapper();
 		$tab->attr('id', 'MostViewedPages'.$viewRangeKey);
@@ -153,7 +151,7 @@ class ProcessUpdMostViewed extends Process {
 	/**
 	 * @throws WireException
 	 */
-	public function buildDeleteEntriesTab(): InputfieldWrapper {
+	private function buildDeleteEntriesTab(): InputfieldWrapper {
 		$modules = $this->wire->modules;
 
 		$tab = new InputfieldWrapper();
