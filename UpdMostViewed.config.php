@@ -13,8 +13,8 @@ class UpdMostViewedConfig extends ModuleConfig {
 			'beLimit' => 25,
 			'templatesToCount' => [],
 			'rolesToCount' => [],
-			'excludedBranches' => '',
-			'excludedPages' => '',
+			'excludedBranches' => [],
+			'excludedPages' => [],
 			'excludedIPs' => '',
 			'titleFields' => 'title',
 			'getVarAjaxLoad' => 'getMostViewedContent',
@@ -47,16 +47,18 @@ class UpdMostViewedConfig extends ModuleConfig {
 			'description' => __('Initiate automated page view counting by module hook (no coding in templates required and it works also for cached pages)')
 		]));
 
-		$fieldset->add($this->buildField('InputfieldText', [
+		$fieldset->add($this->buildField('InputfieldPageListSelectMultiple', [
 			'id+name' => 'excludedBranches',
 			'label' => __('Branches excluded from tracking'),
-			'description' => __('Pages and their subpages that are not to be tracked. Input: Page IDs (comma separated).')
+			'description' => __('Pages and their subpages that are not to be tracked'),
+			'parent_id' => 1
 		]));
 
-		$fieldset->add($this->buildField('InputfieldText', [
+		$fieldset->add($this->buildField('InputfieldPageListSelectMultiple', [
 			'id+name' => 'excludedPages',
 			'label' => __('Pages excluded from tracking'),
-			'description' => __('Pages that should not be tracked. Input: Page IDs (comma separated).')
+			'description' => __('Pages that should not be tracked'),
+			'parent_id' => 1
 		]));
 
 		$fieldset->add($this->buildField('InputfieldText', [

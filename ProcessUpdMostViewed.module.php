@@ -1,13 +1,16 @@
 <?php namespace ProcessWire;
 
 class ProcessUpdMostViewed extends Process {
-	/** @var string Name used for the Module-Permission and ProcessWire Page*/
+	/**
+	 * Name used for the Module-Permission and ProcessWire Page
+	 * @var string
+	 */
 	const PAGE_NAME = 'most-viewed';
 
 	public static function getModuleInfo(): array {
 		return [
 			'title' => 'Upd Most Viewed',
-			'version' => 202,
+			'version' => 203,
 			'summary' => __('Tracking Page Views and Listing «Most Viewed» Pages (Backend Process)'),
 			'author' => 'update AG',
 			'href' => 'https://github.com/update-switzerland/UpdMostViewed',
@@ -25,8 +28,6 @@ class ProcessUpdMostViewed extends Process {
 			],
 		];
 	}
-
-
 
 	/**
 	 * @throws WireException

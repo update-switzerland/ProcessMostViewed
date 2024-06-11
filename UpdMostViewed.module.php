@@ -10,7 +10,7 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 	public static function getModuleInfo(): array {
 		return [
 			'title' => 'Upd Most Viewed',
-			'version' => 202,
+			'version' => 203,
 			'summary' => __('Tracking Page Views and Listing «Most Viewed» Pages'),
 			'author' => 'update AG',
 			'href' => 'https://github.com/update-switzerland/UpdMostViewed',
@@ -33,8 +33,8 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 	private int $beLimit;
 	private array $templatesToCount;
 	private array $rolesToCount;
-	private string $excludedBranches;
-	private string $excludedPages;
+	private array $excludedBranches;
+	private array $excludedPages;
 	private string $excludedIPs;
 	private string $titleFields;
 	private string $getVarAjaxLoad;
@@ -114,24 +114,30 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 
 
 	private function isInExcludedPages(int $pageId): bool {
-		if (trim($this->excludedPages) === '') {
+		$excludedPages = array_values($this->excludedPages);
+
+		if (empty($excludedPages)) {
 			return false;
 		}
 
-		$excludedPages = preg_split('/\s*,\s*/', $this->excludedPages);
 		return in_array($pageId, $excludedPages);
 	}
 
 	private function isInExcludedBranches(int $pageId): bool {
-		if (trim($this->excludedBranches) === '') {
+		$excludedBranches = array_values($this->excludedBranches);
+
+		if (empty($excludedBranches)) {
 			return false;
 		}
 
-		$excludedBranches = preg_split('/\s*,\s*/', $this->excludedBranches);
 		$currentPage = $this->pages->get($pageId);
 
-		foreach ($excludedBranches as $excludedBranch) {
-			if ($pageId == $excludedBranch || $currentPage->parents->has("id=$excludedBranch")) {
+		if (in_array($pageId, $excludedBranches)) {
+			return true;
+		}
+
+		foreach ($currentPage->parents as $parent) {
+			if (in_array($parent->id, $excludedBranches)) {
 				return true;
 			}
 		}
@@ -202,7 +208,7 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 	}
 
 
-	private function writePageView(Page $page): void {
+	protected function writePageView(Page $page): void {
 		$this->log(sprintf('Check counting ID: %s', $page->id));
 
 		$pageId = $page->id;
