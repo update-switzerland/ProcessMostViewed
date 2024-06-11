@@ -8,7 +8,7 @@ This module is ideal for creating sidebar-widgets, for example, a "Most Read Art
 ## Getting Started
 Installing the UpdMostViewed module to your ProcessWire project is simple, choose one of the following methods:
 
-- **From GitHub:** Download the module directly from [Latest Releases on GitHub](https://github.com/update-switzerland/MostViewed/releases/latest).
+- **From GitHub:** Download the module directly from [Latest Releases on GitHub](https://github.com/update-switzerland/UpdMostViewed/releases/latest).
 - **Using Composer:** If you're using Composer for your project, you can add the module by running the command `composer require update-switzerland/updmostviewed` in your project root directory.
 
 With the module downloaded and installed, configure it to best suit your needs. Toggle on the "Automated Page View Counting" for hands-free tracking.
