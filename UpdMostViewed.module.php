@@ -9,7 +9,7 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 
 	public static function getModuleInfo(): array {
 		return [
-			'title' => 'Upd Most Viewed',
+			'title' => 'Most Viewed',
 			'version' => 203,
 			'summary' => __('Tracking Page Views and Listing «Most Viewed» Pages'),
 			'author' => 'update AG',
@@ -19,7 +19,8 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 			'icon' => 'list-ol',
 			'requires' => [
 				'PHP>=8.0', 'ProcessWire>=3.0.184',
-			], 'installs' => 'ProcessUpdMostViewed',
+			],
+			'installs' => 'ProcessUpdMostViewed',
 		];
 	}
 
@@ -80,7 +81,6 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 		if (!$this->autoCounting || $page->rootParent->id === 2) return;
 		if ($page?->id < 1) return;
 
-		$this->log(sprintf('autoCounting active (ID: %s)', $page->id));
 		$this->writePageView($page);
 	}
 
@@ -120,7 +120,13 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 			return false;
 		}
 
-		return in_array($pageId, $excludedPages);
+		if (!in_array($pageId, $excludedPages)) {
+			return false;
+		}
+
+		$reason = sprintf('Excluded page ID %s', $pageId);
+		$this->logPageViewSkip($pageId, $reason);
+		return true;
 	}
 
 	private function isInExcludedBranches(int $pageId): bool {
@@ -133,11 +139,15 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 		$currentPage = $this->pages->get($pageId);
 
 		if (in_array($pageId, $excludedBranches)) {
+			$reason = sprintf('Excluded branch page ID %s', $pageId);
+			$this->logPageViewSkip($pageId, $reason);
 			return true;
 		}
 
 		foreach ($currentPage->parents as $parent) {
 			if (in_array($parent->id, $excludedBranches)) {
+				$reason = sprintf('Page %s is a child of excluded Branch «%s»', $pageId, $parent->title);
+				$this->logPageViewSkip($pageId, $reason);
 				return true;
 			}
 		}
@@ -145,16 +155,22 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 		return false;
 	}
 
-	private function isInExcludedIP(string $ip): bool {
+	private function isInExcludedIP(int $pageId, string $ip): bool {
 		if (trim($this->excludedIPs) === '') {
 			return false;
 		}
 
 		$excludedIPs = preg_split('/\s*,\s*/', $this->excludedIPs);
-		return in_array($ip, $excludedIPs);
+		if (!in_array($ip, $excludedIPs)) {
+			return false;
+		}
+
+		$reason = sprintf('Excluded IP %s', $ip);
+		$this->logPageViewSkip($pageId, $reason);
+		return true;
 	}
 
-	private function allowTrackViewUser(): bool {
+	private function allowTrackViewUser(int $pageId): bool {
 		$user = $this->wire->user;
 
 		if ($user->isGuest()) {
@@ -167,29 +183,31 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 			}
 		}
 
+		$roleNames = $user->roles->explode('name');
+		$reason = sprintf('User roles not among roles to count: %s', implode(', ', $roleNames));
+		$this->logPageViewSkip($pageId, $reason);
 		return false;
 	}
 
-	private function checkIfCrawler(): bool {
-		$userAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
-		$botIdentifiers = [
-			'bot',
-			'slurp',
-			'crawler',
-			'spider',
-			'curl',
-			'facebook',
-			'fetch'
-		];
-		foreach ($botIdentifiers as $identifier) {
-			if (str_contains($userAgent, $identifier)) {
+	/**
+	 * @see https://github.com/mitchellkrogza/nginx-ultimate-bad-bot-blocker/blob/master/_generator_lists/bad-user-agents.list
+	 */
+	private function checkIfCrawler(int $pageId): bool {
+		if (isset($_SERVER['HTTP_USER_AGENT'])) {
+			$useragent = $this->wire->sanitizer->text($_SERVER['HTTP_USER_AGENT']);
+			$crawlerList = preg_replace('/[\r\n]/', '', file_get_contents(__DIR__ . '/crawler.txt'));
+
+			if (preg_match("/($crawlerList)/i", $useragent, $matches)) {
+				$reason = sprintf('Crawler «%s» detected', $matches[0]);
+				$this->logPageViewSkip($pageId, $reason);
 				return true;
 			}
 		}
+
 		return false;
 	}
 
-	private function isCountableTemplate(int $pageId): bool {
+	private function isCountableTemplate(int $pageId, int $templateId): bool {
 		if (!count($this->templatesToCount)) {
 			return true;
 		}
@@ -199,28 +217,29 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 			return true;
 		}
 
-		$pageTemplateId = $this->wire->pages->get('id=' . $pageId)?->template?->id;
-		if (!$pageTemplateId) {
-			return false;
+		if (in_array($templateId, $templateIds)) {
+			return true;
 		}
 
-		return in_array($pageTemplateId, $templateIds);
+		$ignoredTemplateName = $this->wire->templates->get($templateId)->name;
+		$this->logPageViewSkip($pageId, sprintf('Ignored template %s', $ignoredTemplateName));
+		return false;
 	}
 
-
 	protected function writePageView(Page $page): void {
-		$this->log(sprintf('Check counting ID: %s', $page->id));
-
 		$pageId = $page->id;
 		$templateId = $page->template->id;
 
-		if ($pageId === $this->wire->config->http404PageID) return;
-		if ($this->excludeCrawler && $this->checkIfCrawler()) return;
-		if (!$this->allowTrackViewUser()) return;
-		if ($this->isInExcludedIP($_SERVER['REMOTE_ADDR'])) return;
+		if ($pageId === $this->wire->config->http404PageID) {
+			$this->logPageViewSkip($pageId, '404 Page');
+			return;
+		}
+		if ($this->excludeCrawler && $this->checkIfCrawler($pageId)) return;
+		if (!$this->allowTrackViewUser($pageId)) return;
+		if ($this->isInExcludedIP($pageId, $_SERVER['REMOTE_ADDR'])) return;
 		if ($this->isInExcludedPages($pageId)) return;
 		if ($this->isInExcludedBranches($pageId)) return;
-		if ($this->autoCounting && !$this->isCountableTemplate($pageId)) return;
+		if ($this->autoCounting && !$this->isCountableTemplate($pageId, $templateId)) return;
 
 		$sql = sprintf("INSERT INTO %s (page_id, template_id) VALUES(:pageId, :templateId)", self::TABLE_NAME);
 		$query = $this->database->prepare($sql);
@@ -228,6 +247,7 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 		$query->bindValue(':templateId', $templateId, \PDO::PARAM_INT);
 
 		$logMessage = sprintf('Count view of %s from %s (%s)', $pageId, $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']);
+		if ($this->autoCounting) $logMessage .= ' - autoCounting active';
 		$this->log($logMessage);
 		$query->execute();
 	}
@@ -360,6 +380,11 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 		}
 
 		return $mostViewedList;
+	}
+
+	private function logPageViewSkip(int $pageId, string $reason): void {
+		$message = sprintf('Not logging page-view for ID: %s (Reason: %s)', $pageId, $reason);
+		$this->log($message);
 	}
 
 	private function log(string $message = ''): void {
