@@ -1,15 +1,12 @@
 <?php namespace ProcessWire;
 
 class ProcessUpdMostViewed extends Process {
-	/**
-	 * Name used for the Module-Permission and ProcessWire Page
-	 * @var string
-	 */
+	/** @var string Name used for the Module-Permission and ProcessWire Page */
 	const PAGE_NAME = 'most-viewed';
 
 	public static function getModuleInfo(): array {
 		return [
-			'title' => 'Upd Most Viewed',
+			'title' => 'Most Viewed',
 			'version' => 203,
 			'summary' => __('Tracking Page Views and Listing «Most Viewed» Pages (Backend Process)'),
 			'author' => 'update AG',
@@ -38,6 +35,7 @@ class ProcessUpdMostViewed extends Process {
 		$input = $this->wire->input;
 		$modules = $this->wire->modules;
 
+		/** @var UpdMostViewed $mostViewed */
 		$mostViewed = $modules->get('UpdMostViewed');
 		$modules->get('JqueryWireTabs');
 
@@ -49,16 +47,20 @@ class ProcessUpdMostViewed extends Process {
 			$this->handlePageViewDeletionResult($result, $timeRange);
 		}
 
-        if($mostViewed->hasEntriesInDB()) {
+        if ($mostViewed->hasEntriesInDB()) {
             $out = $this->renderMostViewedForm($mostViewed);
         }
 
 		return $out;
 	}
 
-    public function renderMostViewedForm(UpdMostViewed $mostViewed) {
+	/**
+	 * @throws WireException
+	 */
+    public function renderMostViewedForm(UpdMostViewed $mostViewed): string {
         $modules = $this->wire->modules;
 
+		/** @var InputfieldForm $form */
         $form = $modules->get('InputfieldForm');
         $form->attr('name+id', 'MostViewedTabs');
         $form->attr('method', 'post');
@@ -163,7 +165,8 @@ class ProcessUpdMostViewed extends Process {
 		$field = $modules->get('InputfieldSelect');
 		$field->label = __('Select time range');
 		$field->attr('id+name', 'timerange');
-		$field->attr('defaultValue', '7');
+		$field->attr('value', '7');
+		$field->attr('required', true);
 		$timeRanges = [
 			'7' => __('older than 7 days'),
 			'14' => __('older than 14 days'),
