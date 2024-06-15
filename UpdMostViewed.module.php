@@ -230,10 +230,7 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 		$pageId = $page->id;
 		$templateId = $page->template->id;
 
-		if ($pageId === $this->wire->config->http404PageID) {
-			$this->logPageViewSkip($pageId, '404 Page');
-			return;
-		}
+		if ($pageId === $this->wire->config->http404PageID) return;
 		if ($this->excludeCrawler && $this->checkIfCrawler($pageId)) return;
 		if (!$this->allowTrackViewUser($pageId)) return;
 		if ($this->isInExcludedIP($pageId, $_SERVER['REMOTE_ADDR'])) return;
