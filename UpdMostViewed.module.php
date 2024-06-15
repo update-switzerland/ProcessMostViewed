@@ -10,7 +10,7 @@ class UpdMostViewed extends WireData implements Module, ConfigurableModule {
 	public static function getModuleInfo(): array {
 		return [
 			'title' => 'Most Viewed',
-			'version' => 203,
+			'version' => 204,
 			'summary' => __('Tracking Page Views and Listing «Most Viewed» Pages'),
 			'author' => 'update AG',
 			'href' => 'https://github.com/update-switzerland/UpdMostViewed',

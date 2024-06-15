@@ -7,7 +7,7 @@ class ProcessUpdMostViewed extends Process {
 	public static function getModuleInfo(): array {
 		return [
 			'title' => 'Most Viewed',
-			'version' => 203,
+			'version' => 204,
 			'summary' => __('Tracking Page Views and Listing «Most Viewed» Pages (Backend Process)'),
 			'author' => 'update AG',
 			'href' => 'https://github.com/update-switzerland/UpdMostViewed',
