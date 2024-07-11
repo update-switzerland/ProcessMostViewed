@@ -18,6 +18,7 @@ class ProcessUpdMostViewed extends Process {
 			'permissions' => [
 				self::PAGE_NAME => 'List «Most viewed» counter',
 			],
+            'permission' => self::PAGE_NAME,
 			'page' => [
 				'name' => self::PAGE_NAME,
 				'parent' => 'setup',
